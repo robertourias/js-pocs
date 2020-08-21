@@ -1,25 +1,47 @@
+import 'regenerator-runtime/runtime';
+import api from './api';
+
 class App {
     constructor() {
+        
         this.repositories = [];
 
         this.formElement = document.getElementById("repo-form");
+        this.inputElement = document.querySelector("input[name=repository]");
         this.listElement = document.getElementById("repo-list");
+        console.log("App -> constructor -> this.listElement", this.listElement);
 
         this.registerHandlers();
     }
 
     registerHandlers() {
+        // Arrow Function
         this.formElement.onsubmit = event => this.addRepository(event);
     }
 
-    addRepository(event) {
+    // Async await
+    async addRepository(event) {
         event.preventDefault();
+
+        const repoInput = this.inputElement.value;
+        if (repoInput.length === 0)
+            return;
+
+        // String interpolation
+        const response = await api.get(`users/${repoInput}`);
+        console.log(response);
+
+        // Desestruturação
+        const { login, bio, html_url, avatar_url } = response.data;
+
         this.repositories.push({
-            name: 'rocketseat',
-            description: 'Teste',
-            avatar_url: 'https://avatars0.githubusercontent.com/u/28929274?v=4',
-            html_url: 'http://github.com/rocketseat/rocketseat.com.br',
+            login,
+            bio,
+            avatar_url,
+            html_url
         });
+
+        this.inputElement.value = '';
 
         this.render();
     }
@@ -32,10 +54,10 @@ class App {
             imgEl.setAttribute('src', repo.avatar_url);
 
             let titleEl = document.createElement('strong');
-            titleEl.appendChild(document.createTextNode(repo.name));
+            titleEl.appendChild(document.createTextNode(repo.login));
 
             let descriptionEl = document.createElement('p');
-            descriptionEl.appendChild(document.createTextNode(repo.description));
+            descriptionEl.appendChild(document.createTextNode(repo.bio));
 
             let linkEl = document.createElement('a');
             linkEl.setAttribute('target', '_blank');
