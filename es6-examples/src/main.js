@@ -1,6 +1,11 @@
 import 'regenerator-runtime/runtime';
 import api from './api';
 
+/**
+ *
+ * Recurso de classe
+ * 
+ */
 class App {
     constructor() {
         
@@ -19,6 +24,20 @@ class App {
         this.formElement.onsubmit = event => this.addRepository(event);
     }
 
+    // parametro padrão em uma função
+    setLoading(loading = true) {
+        if(loading) {
+            let loadingEl = document.createElement('span');
+
+            loadingEl.appendChild(document.createTextNode('Carregando'));
+            loadingEl.setAttribute('id', 'loading');
+
+            this.formElement.appendChild(loadingEl);
+        } else {
+            document.getElementById('loading').remove();
+        }
+    }
+
     // Async await
     async addRepository(event) {
         event.preventDefault();
@@ -27,23 +46,33 @@ class App {
         if (repoInput.length === 0)
             return;
 
-        // String interpolation
-        const response = await api.get(`users/${repoInput}`);
-        console.log(response);
+        this.setLoading();
 
-        // Desestruturação
-        const { login, bio, html_url, avatar_url } = response.data;
+        // try catch
+        try {
+            // template literals
+            const response = await api.get(`users/${repoInput}`);
+            console.log(response);
 
-        this.repositories.push({
-            login,
-            bio,
-            avatar_url,
-            html_url
-        });
+            // Desestruturação
+            const { login, bio, html_url, avatar_url } = response.data;
 
-        this.inputElement.value = '';
+            // short syntaxe
+            this.repositories.push({
+                login,
+                bio,
+                avatar_url,
+                html_url
+            });
 
-        this.render();
+            this.inputElement.value = '';
+
+            this.render();
+        } catch (err) {
+            alert('O repositório não existe');
+        }
+
+        this.setLoading(false);
     }
 
     render() {
