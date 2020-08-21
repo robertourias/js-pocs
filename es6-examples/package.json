@@ -1,0 +1,8 @@
+{
+  "name": "es6-examples",
+  "version": "1.0.0",
+  "main": "index.js",
+  "repository": "https://github.com/robertourias/js-pocs.git",
+  "author": "Roberto Nicoletti",
+  "license": "MIT"
+}
